@@ -1,34 +1,45 @@
 package main
 
 import (
+	"easychat/server/dao"
+	"easychat/server/handler"
+	"easychat/server/service"
+	"easychat/server/source"
 	"fmt"
 	"net"
+	"time"
 )
 
 func main() {
-	listen,err:=net.Listen("tcp","127.0.0.1:8888")
-	if err!=nil{
-		fmt.Println("lister err=",err)
+	//服务器启动时就初始化连接池
+	source.InitPool("10.16.65.76:6379", 16, 0, 300*time.Second)
+	//初始化userDao
+	dao.InitUserDao(source.PoolInstance)
+	service.InitUserService(dao.UserDaoInstance)
+	listen, err := net.Listen("tcp", "127.0.0.1:8888")
+	if err != nil {
+		fmt.Println("lister err=", err)
 		return
 	}
 	defer listen.Close()
 	for {
-		conn,err:=listen.Accept()
-		if err!=nil{
-			fmt.Println("Accept err=",err)
+		conn, err := listen.Accept()
+		if err != nil {
+			fmt.Println("Accept err=", err)
 		}
 
-		go handler(conn)
+		go Connect(conn)
 	}
 }
-func handler(conn net.Conn)  {
+
+func Connect(conn net.Conn) {
 	defer conn.Close()
-	ha:=&DispatchHandler{
+	ha := &handler.DispatchHandler{
 		Conn: conn,
 	}
-	err:=ha.connHandler()
-	if err!=nil{
-		fmt.Println("客户端与服务器通信协程错误err=",err)
+	err := ha.ConnHandler()
+	if err != nil {
+		fmt.Println("客户端与服务器通信协程错误err=", err)
 		return
 	}
 }
