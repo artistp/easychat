@@ -4,7 +4,6 @@ import (
 	"easychat/common/message"
 	"easychat/common/utils"
 	"easychat/server/service"
-	"easychat/server/tools"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -38,8 +37,8 @@ func (this *UserHandler) LoginHandler(mes *message.Message) (err error) {
 		//合法
 		loginResMes.Code = 200
 		this.UserId = user.UserId
-		tools.UserMgr.AddOnlineUser(this)
-		for id, _ := range tools.UserMgr.OnlineUserTable {
+		UserMgr.AddOnlineUser(this)
+		for id, _ := range UserMgr.OnlineUserTable {
 			loginResMes.OnlineUserIds = append(loginResMes.OnlineUserIds, id)
 		}
 		fmt.Println(user, "登录成功")

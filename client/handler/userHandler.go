@@ -70,6 +70,9 @@ func (this *UserHandler) Login(userId int, userPwd string) (err error) {
 		//显示当前在线用户的列表
 		fmt.Println("当前在线的用户:")
 		for _, v := range loginResMes.OnlineUserIds {
+			if v == userId {
+				continue
+			}
 			fmt.Println("用户id:\t", v)
 		}
 
