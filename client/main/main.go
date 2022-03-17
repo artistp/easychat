@@ -13,9 +13,7 @@ func main() {
 	//接收用户的选择
 	var key int
 	//判断是否还继续循环显示
-	var loop = true
-
-	for loop {
+	for {
 		fmt.Println("---------多人聊天------------")
 		fmt.Println("\t\t\t1 登录")
 		fmt.Println("\t\t\t2 注册")
@@ -43,10 +41,8 @@ func main() {
 			//创建一个userHandler的对象
 			uh := &handler.UserHandler{}
 			uh.Register(userId, userPsw, userName)
-
 		case 3:
 			fmt.Println("退出")
-
 		default:
 			fmt.Println("输入有误，请重新输入")
 		}

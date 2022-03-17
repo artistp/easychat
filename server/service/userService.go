@@ -3,6 +3,7 @@ package service
 import (
 	"easychat/common/entity"
 	error2 "easychat/common/error"
+	"easychat/common/message"
 	"easychat/server/dao"
 )
 
@@ -47,6 +48,7 @@ func (this *UserService) UserRegisterService(userId int, userPwd, userName strin
 		userId,
 		userPwd,
 		userName,
+		message.USEROFFLINE,
 	}
 	err = this.Ud.SaveUserDao(user)
 	//获取到了用户，密码不一定正确，需要验证密码

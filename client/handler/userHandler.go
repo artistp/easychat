@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"easychat/common/entity"
 	"easychat/common/message"
 	"easychat/common/utils"
 	"encoding/json"
@@ -74,6 +75,13 @@ func (this *UserHandler) Login(userId int, userPwd string) (err error) {
 				continue
 			}
 			fmt.Println("用户id:\t", v)
+
+			//初始化在线用户的列表
+			user := &entity.User{
+				UserId:     v,
+				UserStatus: message.USERONLINE,
+			}
+			UserTable[v] = user
 		}
 
 		//需要启动一个协程，

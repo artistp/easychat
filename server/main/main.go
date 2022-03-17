@@ -26,9 +26,9 @@ func main() {
 		conn, err := listen.Accept()
 		if err != nil {
 			fmt.Println("Accept err=", err)
+		} else {
+			go Connect(conn)
 		}
-
-		go Connect(conn)
 	}
 }
 
@@ -37,7 +37,7 @@ func Connect(conn net.Conn) {
 	ha := &handler.DispatchHandler{
 		Conn: conn,
 	}
-	err := ha.ConnHandler()
+	err := ha.ReadMesHandler()
 	if err != nil {
 		fmt.Println("客户端与服务器通信协程错误err=", err)
 		return

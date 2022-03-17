@@ -41,6 +41,8 @@ func (this *UserHandler) LoginHandler(mes *message.Message) (err error) {
 		for id, _ := range UserMgr.OnlineUserTable {
 			loginResMes.OnlineUserIds = append(loginResMes.OnlineUserIds, id)
 		}
+		user.UserStatus = message.USERONLINE
+		this.NotifyOthersOnline(user.UserId)
 		fmt.Println(user, "登录成功")
 	}
 
@@ -62,7 +64,6 @@ func (this *UserHandler) LoginHandler(mes *message.Message) (err error) {
 	tf := &utils.Transfer{
 		Conn: this.Conn,
 	}
-
 	err = tf.WritePkg(data)
 
 	return
@@ -78,7 +79,7 @@ func (this *UserHandler) RegisterHandler(mes *message.Message) (err error) {
 	}
 	//返回的消息
 	var resMes message.Message
-	resMes.Type = message.LOGINRESMES
+	resMes.Type = message.REGISTERRESMES
 
 	var registerResMes message.RegisterResMes
 
@@ -93,7 +94,7 @@ func (this *UserHandler) RegisterHandler(mes *message.Message) (err error) {
 		fmt.Println(user, "注册成功")
 	}
 
-	//序列化登录信息
+	//序列化注册信息
 	data, err := json.Marshal(registerResMes)
 	if err != nil {
 		fmt.Println("registerResMes marshal err=", err)
@@ -115,4 +116,45 @@ func (this *UserHandler) RegisterHandler(mes *message.Message) (err error) {
 	err = tf.WritePkg(data)
 
 	return
+}
+
+//通知所有用户
+func (this *UserHandler) NotifyOthersOnline(userId int) {
+	//封装自身的消息
+	var resMes message.Message
+	resMes.Type = message.NOTIFYUSERSTATUSMES
+
+	var notifyMes message.NotifyUserStatusMes
+	notifyMes.UserId = userId
+	notifyMes.UserStatus = message.USERONLINE
+
+	data, err := json.Marshal(notifyMes)
+	if err != nil {
+		fmt.Println("notifyMes Marshal err=", err)
+		return
+	}
+
+	resMes.Data = string(data)
+
+	data, err = json.Marshal(resMes)
+	if err != nil {
+		fmt.Println("resMes Marshal err=", err)
+		return
+	}
+	//遍历在线用户的列表
+	for id, up := range UserMgr.OnlineUserTable {
+		if id == userId {
+			continue
+		}
+		up.notifyToOthers(data)
+	}
+}
+
+func (this *UserHandler) notifyToOthers(data []byte) {
+	tf := &utils.Transfer{Conn: this.Conn}
+	err := tf.WritePkg(data)
+	if err != nil {
+		fmt.Println("Marshal err=", err)
+		return
+	}
 }

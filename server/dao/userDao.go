@@ -12,6 +12,10 @@ var (
 	UserDaoInstance *UserDao
 )
 
+type UserDao struct {
+	Pool *redis.Pool
+}
+
 //使用工厂模式创建一个userDao 的实例
 func newUserDao(pool *redis.Pool) (userDao *UserDao) {
 	userDao = &UserDao{
@@ -20,16 +24,11 @@ func newUserDao(pool *redis.Pool) (userDao *UserDao) {
 	return
 }
 
-type UserDao struct {
-	Pool *redis.Pool
-}
-
 func InitUserDao(pool *redis.Pool) {
 	UserDaoInstance = newUserDao(pool)
 }
 
 func (this *UserDao) GetUserDao(id int) (user *entity.User, err error) {
-
 	conn := this.Pool.Get()
 	defer conn.Close()
 	//通过id去Redis里面去查询

@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"easychat/common/message"
 	"easychat/common/utils"
 	"fmt"
-	"io"
 	"net"
 	"os"
 )
@@ -35,16 +35,23 @@ func ShowMenu() {
 //和服务器端保持通信
 func serverHandlerMes(conn net.Conn) {
 	//创建一个transfer实例，不停地读取服务器的消息
-	tf := &utils.Transfer{Conn: conn}
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
 	for {
 		//客户端不停地读取服务器发送的消息
-		_, err := tf.ReadPkg()
-		if err != nil && err != io.EOF {
-			fmt.Println("服务器错误=", err)
+		mes, err := tf.ReadPkg()
+		if err != nil {
+			fmt.Println("readPkg err=", err)
 			return
 		}
-
-		//如果读取到了消息
-		//fmt.Println("mes from server", mes)
+		switch mes.Type {
+		case message.NOTIFYUSERSTATUSMES:
+			//1.取出mes中的data
+			//2.把用户的信息状态保存在客户端的map[int]User中
+			updateUserTable(&mes)
+		default:
+			fmt.Println("服务器返回了未知消息类型！")
+		}
 	}
 }

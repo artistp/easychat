@@ -12,21 +12,21 @@ type DispatchHandler struct {
 	Conn net.Conn
 }
 
-func (this *DispatchHandler) ConnHandler() error {
+func (this *DispatchHandler) ReadMesHandler() (err error) {
+	tf := &utils.Transfer{
+		Conn: this.Conn,
+	}
 	for {
-		tf := &utils.Transfer{
-			Conn: this.Conn,
-		}
-
 		mes, err := tf.ReadPkg()
 		if err != nil {
-			if err != io.EOF {
+			if err == io.EOF {
+				fmt.Println("客户端退出，断开连接", err)
+			} else {
 				fmt.Println("readPkg err=", err)
 			}
 			return err
 		}
 		err = this.dispatchHandler(&mes)
-		return err
 	}
 }
 
