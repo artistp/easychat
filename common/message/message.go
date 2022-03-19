@@ -13,6 +13,8 @@ const (
 	REGISTERRESMES = "RegisterResMes"
 
 	NOTIFYUSERSTATUSMES = "NotifyUserStatusMes"
+
+	SMSMES = "SmsMes"
 )
 
 //用户状态
@@ -50,4 +52,9 @@ type RegisterResMes struct {
 type NotifyUserStatusMes struct {
 	UserId     int `json:"userId"`
 	UserStatus int `json:"userStatus"` //用户的状态
+}
+
+type SmsMes struct {
+	Content string `json:"content"`
+	User    entity.User
 }

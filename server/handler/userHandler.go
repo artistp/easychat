@@ -37,8 +37,8 @@ func (this *UserHandler) LoginHandler(mes *message.Message) (err error) {
 		//合法
 		loginResMes.Code = 200
 		this.UserId = user.UserId
-		UserMgr.AddOnlineUser(this)
-		for id, _ := range UserMgr.OnlineUserTable {
+		UserMgrInstance.AddOnlineUser(this)
+		for id, _ := range UserMgrInstance.OnlineUserTable {
 			loginResMes.OnlineUserIds = append(loginResMes.OnlineUserIds, id)
 		}
 		user.UserStatus = message.USERONLINE
@@ -142,19 +142,15 @@ func (this *UserHandler) NotifyOthersOnline(userId int) {
 		return
 	}
 	//遍历在线用户的列表
-	for id, up := range UserMgr.OnlineUserTable {
+	for id, up := range UserMgrInstance.OnlineUserTable {
 		if id == userId {
 			continue
 		}
-		up.notifyToOthers(data)
-	}
-}
-
-func (this *UserHandler) notifyToOthers(data []byte) {
-	tf := &utils.Transfer{Conn: this.Conn}
-	err := tf.WritePkg(data)
-	if err != nil {
-		fmt.Println("Marshal err=", err)
-		return
+		tf := &utils.Transfer{Conn: up.Conn}
+		err := tf.WritePkg(data)
+		if err != nil {
+			fmt.Println("Marshal err=", err)
+			return
+		}
 	}
 }

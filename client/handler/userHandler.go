@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"easychat/client/model"
 	"easychat/common/entity"
 	"easychat/common/message"
 	"easychat/common/utils"
@@ -68,6 +69,10 @@ func (this *UserHandler) Login(userId int, userPwd string) (err error) {
 	err = json.Unmarshal([]byte(resMes.Data), &loginResMes)
 	if loginResMes.Code == 200 {
 		fmt.Println("success login")
+		//初始化当前用户
+		model.CurUserInstance.Conn = conn
+		model.CurUserInstance.User.UserId = userId
+		model.CurUserInstance.User.UserStatus = message.USERONLINE
 		//显示当前在线用户的列表
 		fmt.Println("当前在线的用户:")
 		for _, v := range loginResMes.OnlineUserIds {
@@ -81,7 +86,7 @@ func (this *UserHandler) Login(userId int, userPwd string) (err error) {
 				UserId:     v,
 				UserStatus: message.USERONLINE,
 			}
-			UserTable[v] = user
+			UserTableInstance[v] = user
 		}
 
 		//需要启动一个协程，

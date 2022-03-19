@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	UserMgr *UserManager
+	UserMgrInstance *UserManager
 )
 
 type UserManager struct {
@@ -13,7 +13,7 @@ type UserManager struct {
 }
 
 func init() {
-	UserMgr = &UserManager{
+	UserMgrInstance = &UserManager{
 		OnlineUserTable: make(map[int]*UserHandler, 1024),
 	}
 }

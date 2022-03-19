@@ -16,12 +16,15 @@ func ShowMenu() {
 	fmt.Println("-------4.退出系统------------")
 	fmt.Println("请选择：")
 	var key int
+	var content string
 	fmt.Scanf("%d\n", &key)
 	switch key {
 	case 1:
-		fmt.Println("1")
+		showUserTable()
 	case 2:
-		fmt.Println("2")
+		fmt.Println("输入聊天信息：")
+		fmt.Scanf("%s\n", &content)
+		SmsHandlerInstance.SendGroupSms(content)
 	case 3:
 		fmt.Println("3")
 	case 4:
@@ -50,6 +53,8 @@ func serverHandlerMes(conn net.Conn) {
 			//1.取出mes中的data
 			//2.把用户的信息状态保存在客户端的map[int]User中
 			updateUserTable(&mes)
+		case message.SMSMES:
+			showGroupSms(&mes)
 		default:
 			fmt.Println("服务器返回了未知消息类型！")
 		}

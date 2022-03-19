@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-var UserTable map[int]*entity.User = make(map[int]*entity.User, 10)
+var UserTableInstance map[int]*entity.User = make(map[int]*entity.User, 10)
 
 func updateUserTable(mes *message.Message) {
 	var notifyMes message.NotifyUserStatusMes
@@ -16,20 +16,20 @@ func updateUserTable(mes *message.Message) {
 		fmt.Println("Unmarshal err=", err)
 		return
 	}
-	user, ok := UserTable[notifyMes.UserId]
+	user, ok := UserTableInstance[notifyMes.UserId]
 	if !ok { //UserTable中没有
 		user = &entity.User{
 			UserId:     notifyMes.UserId,
 			UserStatus: notifyMes.UserStatus,
 		}
 	}
-	UserTable[notifyMes.UserId] = user
+	UserTableInstance[notifyMes.UserId] = user
 	showUserTable()
 }
 
 func showUserTable() {
 	fmt.Println("当前在线用户列表：")
-	for id, _ := range UserTable {
+	for id, _ := range UserTableInstance {
 		fmt.Println("用户ID: \t", id)
 	}
 }

@@ -45,6 +45,9 @@ func (this *DispatchHandler) dispatchHandler(mes *message.Message) (err error) {
 			Conn: this.Conn,
 		}
 		err = uh.RegisterHandler(mes)
+	case message.SMSMES:
+		smshandler := &SmsHandler{}
+		smshandler.SendGroupSms(mes)
 	default:
 		fmt.Println("err message!")
 	}
